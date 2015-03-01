@@ -17,7 +17,7 @@ public class RetrivePage {
 	
 	// 设置代理服务器
 	static {
-		httpClient.getHostConfiguration().setProxy("192.168.1.1", 8000);
+//		httpClient.getHostConfiguration().setProxy("192.168.1.1", 8000);
 	}
 	
 	public static boolean downloadPage(String path) throws HttpException, IOException {
