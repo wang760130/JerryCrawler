@@ -10,6 +10,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 
 public abstract class AbstractFrontier {
+	
 	private Environment environment = null;
 	private static final String CLASS_CATALOG = "java_class_catalog";
 	protected StoredClassCatalog storedClassCatalog;
