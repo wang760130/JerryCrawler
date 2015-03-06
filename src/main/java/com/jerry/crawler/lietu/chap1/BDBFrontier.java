@@ -38,7 +38,6 @@ public class BDBFrontier extends AbstractFrontier implements Frontier{
 
 	@Override
 	public boolean visited(CrawlUrl url) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
