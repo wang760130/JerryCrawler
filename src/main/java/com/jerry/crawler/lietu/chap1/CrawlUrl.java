@@ -7,7 +7,7 @@ public class CrawlUrl {
 	private String oriUrl;
 	// url的值，主机部分是IP,为了防止重复主机的出现
 	private String url;
-	//URL NUM
+	//URL  NUM
 	private int urlNo;
 	// 获取URL返回的结果码
 	private int statusCode;
