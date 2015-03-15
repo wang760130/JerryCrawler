@@ -1,4 +1,4 @@
-package com.jerry.crawler.lietu.chap1;
+package com.jerry.crawler.chap1;
 
 public class SimpleHash {
 	private int cap;

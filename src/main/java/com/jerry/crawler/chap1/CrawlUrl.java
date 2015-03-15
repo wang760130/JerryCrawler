@@ -1,4 +1,4 @@
-package com.jerry.crawler.lietu.chap1;
+package com.jerry.crawler.chap1;
 import java.sql.Timestamp;
 import java.util.Date;
 
