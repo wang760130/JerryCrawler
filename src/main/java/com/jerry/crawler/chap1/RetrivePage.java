@@ -44,7 +44,7 @@ public class RetrivePage {
 		int statusCode = httpClient.executeMethod(post);
 		
 		// 针对状态码进行处理
-		if(statusCode == HttpStatus.SC_OK) {
+		if(statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
 			input = post.getResponseBodyAsStream();
 			String charset = post.getResponseCharSet();
 			// 得到文件名	
@@ -124,5 +124,17 @@ public class RetrivePage {
 		
 		}
 		return false;
+	}
+	
+	public static void main(String[] args) {
+		try {
+			RetrivePage.downloadPage("http://www.baidu.com");
+		} catch (HttpException e) {
+			e.printStackTrace();
+		} catch (ParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
