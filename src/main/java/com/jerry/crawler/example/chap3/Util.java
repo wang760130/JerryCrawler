@@ -7,7 +7,7 @@ import org.apache.log4j.Level;
 /**
  * 工具类，提供一些方便的方法
  */
-public class IpUtil {
+public class Util {
 
 	private static StringBuilder sb = new StringBuilder();
 
