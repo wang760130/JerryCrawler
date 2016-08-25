@@ -5,11 +5,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 
 /**
- * 工具类，提供一些方便的方法
+ * @author Jerry Wang
+ * @Email  jerry002@126.com
+ * @date   2016年8月26日
  */
 public class IpUtil {
-
-	private static StringBuilder sb = new StringBuilder();
 
 	/**
 	 * 从ip的字符串形式得到字节数组形式
@@ -35,6 +35,7 @@ public class IpUtil {
 	 * @return 字符串形式的ip
 	 */
 	public static String getIpStringFromBytes(byte[] ip) {
+		StringBuilder sb = new StringBuilder();
 		sb.delete(0, sb.length());
 		sb.append(ip[0] & 0xFF);
 		sb.append('.');
@@ -54,8 +55,7 @@ public class IpUtil {
 	 * @param encoding  编码方式
 	 * @return 如果encoding不支持，返回一个缺省编码的字符串
 	 */
-	public static String getString(byte[] b, int offset, int len,
-			String encoding) {
+	public static String getString(byte[] b, int offset, int len, String encoding) {
 		try {
 			return new String(b, offset, len, encoding);
 		} catch (UnsupportedEncodingException e) {
