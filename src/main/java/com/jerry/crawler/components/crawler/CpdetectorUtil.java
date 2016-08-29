@@ -1,4 +1,4 @@
-package com.jerry.crawler.utils;
+package com.jerry.crawler.components.crawler;
 
 import info.monitorenter.cpdetector.io.ASCIIDetector;
 import info.monitorenter.cpdetector.io.ByteOrderMarkDetector;
@@ -49,7 +49,11 @@ public class CpdetectorUtil {
 	 * 获取本地文件的编码格式
 	 * @param file 要判断的文件编码格式
 	 */
-	public static String getLocalFileEncode(File file) {
+	public static String getLocalFileEncode(File file, String defaultCharset) {
+		if(file == null) {
+			return defaultCharset;
+		}
+		
 		CodepageDetectorProxy codepageDetector = setCodepageDetector();
 		
 		Charset charset = null;
@@ -61,14 +65,18 @@ public class CpdetectorUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return defaultCharset;
 	}
 
 	/**
 	 * 获得远程URL文件的编码格式
 	 * @param url  远程文件的URL路径
 	 */
-	public static String getURLFileEncode(URL url) {
+	public static String getURLFileEncode(URL url, String defaultCharset) {
+		if(url == null) {
+			return defaultCharset;
+		}
+		
 		CodepageDetectorProxy codepageDetector = setCodepageDetector();
 		
 		Charset charset = null;
@@ -80,14 +88,18 @@ public class CpdetectorUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return defaultCharset;
 	}
 
 	/**
 	 * 获得文件流的编码格式
 	 * @param inputStream 文件流
 	 */
-	public static String getInputStreamEncode(InputStream inputStream) {
+	public static String getInputStreamEncode(InputStream inputStream, String defaultCharset) {
+		if(inputStream == null) {
+			return defaultCharset;
+		}
+		
 		CodepageDetectorProxy codepageDetector = setCodepageDetector();
 		
 		Charset charset = null;
@@ -99,7 +111,7 @@ public class CpdetectorUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return defaultCharset;
 	}
 
 	/**
@@ -107,7 +119,11 @@ public class CpdetectorUtil {
 	 * 
 	 * @param str 要判断的文件编码格式字符串
 	 */
-	public static String getStringEncode(String str) {
+	public static String getStringEncode(String str, String defaultCharset) {
+		if(str == null) {
+			return defaultCharset;
+		}
+		
 		CodepageDetectorProxy codepageDetector = setCodepageDetector();
 		
 		Charset charset = null;
@@ -120,7 +136,7 @@ public class CpdetectorUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return defaultCharset;
 	}
 	
 }

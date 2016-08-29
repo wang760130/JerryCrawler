@@ -1,24 +1,30 @@
 package com.jerry.crawler.cases.baidunews;
 
-import java.io.BufferedReader;  
-import java.io.ByteArrayInputStream;  
-import java.io.IOException;  
-import java.io.InputStream;  
-import java.io.InputStreamReader;  
-import java.util.HashMap;  
-import java.util.Iterator;  
-import java.util.Map;  
-import java.util.Map.Entry;  
-  
-import org.apache.commons.httpclient.Header;  
-import org.apache.commons.httpclient.HttpClient;  
-import org.apache.commons.httpclient.HttpException;  
-import org.apache.commons.httpclient.HttpMethod;  
-import org.apache.commons.httpclient.HttpStatus;  
-import org.apache.commons.httpclient.methods.GetMethod;  
-import org.apache.commons.httpclient.methods.PostMethod;  
-import org.apache.log4j.Logger;  
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.log4j.Logger;
+
+import com.jerry.crawler.components.crawler.CpdetectorUtil;
+  
+  
 public abstract class CrawlBase {  
     private static Logger log = Logger.getLogger(CrawlBase.class);  
       
@@ -27,32 +33,33 @@ public abstract class CrawlBase {
     //返回头信息  
     private Header[] responseHeaders = null;  
     //连接超时时间  
-    private static int connectTimeout = 3500;  
+    private static int connectTimeout = 10000;  
     //连接读取时间  
-    private static int readTimeout = 3500;  
+    private static int readTimeout = 10000;  
     //默认最大访问次数  
     private static int maxConnectTimes = 3;  
     //网页默认编码方式  
     private static String charsetName = "iso-8859-1";  
-    private static HttpClient httpClient = new HttpClient();  
+    //将HttpClient委托给MultiThreadedHttpConnectionManager，支持多线程  
+    private static MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();  
+    private static HttpClient httpClient = new HttpClient(httpConnectionManager);  
       
     static {  
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectTimeout);  
         httpClient.getHttpConnectionManager().getParams().setSoTimeout(readTimeout);  
+        //设置请求的编码格式  
+        httpClient.getParams().setContentCharset("utf-8");  
     }  
-      
     /** 
      * @param urlStr 
      * @param charsetName 
      * @param method 
      * @param params 
      * @return 
-     * @throws HttpException 
-     * @throws IOException 
      * @Author: lulei   
      * @Description: method方式访问页面 
      */  
-    public boolean readPage(String urlStr, String charsetName, String method, HashMap<String, String> params) throws HttpException, IOException {  
+    public boolean readPage(String urlStr, String charsetName, String method, HashMap<String, String> params) {  
         if ("post".equals(method) || "POST".equals(method)) {  
             return readPageByPost(urlStr, charsetName, params);  
         } else {  
@@ -65,12 +72,10 @@ public abstract class CrawlBase {
      * @param charsetName 
      * @param params 
      * @return 访问是否成功 
-     * @throws HttpException 
-     * @throws IOException 
      * @Author: lulei   
      * @Description: Get方式访问页面 
      */  
-    public boolean readPageByGet(String urlStr, String charsetName, HashMap<String, String> params) throws HttpException, IOException {  
+    public boolean readPageByGet(String urlStr, String charsetName, HashMap<String, String> params) {  
         GetMethod getMethod = createGetMethod(urlStr, params);  
         return readPage(getMethod, charsetName, urlStr);  
     }  
@@ -85,10 +90,43 @@ public abstract class CrawlBase {
      * @Author: lulei   
      * @Description: Post方式访问页面 
      */  
-    public boolean readPageByPost(String urlStr, String charsetName, HashMap<String, String> params) throws HttpException, IOException{  
+    public boolean readPageByPost(String urlStr, String charsetName, HashMap<String, String> params){  
         PostMethod postMethod = createPostMethod(urlStr, params);  
         return readPage(postMethod, charsetName, urlStr);  
     }  
+      
+    /** 
+     * @param urlStr 
+     * @param charsetName 
+     * @param xmlString 
+     * @return 
+     * @throws UnsupportedEncodingException  
+     * @throws HttpException 
+     * @throws IOException 
+     * @Author:lulei   
+     * @Description: 提交xml流参数 
+     */  
+    public boolean readPageByPostXml(String urlStr, String charsetName, String xmlString) throws UnsupportedEncodingException {  
+        PostMethod postMethod = createPostMethodXml(urlStr, xmlString);  
+        return readPage(postMethod, charsetName, urlStr);  
+    }  
+      
+    /** 
+     * @param urlStr 
+     * @param charsetName 
+     * @param jsonString 
+     * @return 
+     * @throws UnsupportedEncodingException  
+     * @throws HttpException 
+     * @throws IOException 
+     * @Author:lulei   
+     * @Description: 提交json流参数 
+     */  
+    public boolean readPageByPostJson(String urlStr, String charsetName, String jsonString) throws UnsupportedEncodingException {  
+        PostMethod postMethod = createPostMethodJson(urlStr, jsonString);  
+        return readPage(postMethod, charsetName, urlStr);  
+    }  
+      
       
     /** 
      * @param method 
@@ -100,7 +138,7 @@ public abstract class CrawlBase {
      * @Author: lulei   
      * @Description: 读取页面信息和头信息 
      */  
-    private boolean readPage(HttpMethod method, String defaultCharset, String urlStr) throws HttpException, IOException{  
+    private boolean readPage(HttpMethod method, String defaultCharset, String urlStr){  
         int n = maxConnectTimes;  
         while (n > 0) {  
             try {  
@@ -121,7 +159,7 @@ public abstract class CrawlBase {
                     }  
                     pageSourceCode = stringBuffer.toString();  
                     InputStream in =new  ByteArrayInputStream(pageSourceCode.getBytes(charsetName));  
-                    String charset = CharsetUtil.getStreamCharset(in, defaultCharset);  
+                    String charset = CpdetectorUtil.getInputStreamEncode(in, defaultCharset);  
                     //下面这个判断是为了IP归属地查询特意加上去的  
                     if ("Big5".equals(charset)) {  
                         charset = "gbk";  
@@ -141,21 +179,36 @@ public abstract class CrawlBase {
     }  
       
     /** 
+     * @param url 
+     * @return 
+     * @Author:lulei   
+     * @Description: 对URL中的中文做预处理 
+     */  
+    private String encodeUrlCh(String url) {  
+        try {  
+            return DoRegex.encodeUrlCh(url);  
+        } catch (UnsupportedEncodingException e) {  
+            e.printStackTrace();  
+            return url;  
+        }  
+    }  
+      
+    /** 
      * @param urlStr 
      * @param params 
      * @return GetMethod 
      * @Author: lulei   
      * @Description: 设置get请求参数 
      */  
-    @SuppressWarnings("rawtypes")  
     private GetMethod createGetMethod(String urlStr, HashMap<String, String> params){  
+        urlStr = encodeUrlCh(urlStr);  
         GetMethod getMethod = new GetMethod(urlStr);  
         if (params == null){  
             return getMethod;  
         }  
-        Iterator iter = params.entrySet().iterator();  
+        Iterator<Entry<String, String>> iter = params.entrySet().iterator();  
         while (iter.hasNext()) {  
-            Map.Entry entry = (Map.Entry) iter.next();  
+            Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();  
             String key = (String) entry.getKey();  
             String val = (String) entry.getValue();  
             getMethod.setRequestHeader(key, val);  
@@ -171,6 +224,7 @@ public abstract class CrawlBase {
      * @Description: 设置post请求参数 
      */  
     private PostMethod createPostMethod(String urlStr, HashMap<String, String> params){  
+        urlStr = encodeUrlCh(urlStr);  
         PostMethod postMethod = new PostMethod(urlStr);  
         if (params == null){  
             return postMethod;  
@@ -187,13 +241,44 @@ public abstract class CrawlBase {
       
     /** 
      * @param urlStr 
+     * @param jsonString 
+     * @return 
+     * @throws UnsupportedEncodingException 
+     * @Author:lulei   
+     * @Description: 设置json格式流参数 
+     */  
+    private PostMethod createPostMethodJson(String urlStr, String jsonString) throws UnsupportedEncodingException{  
+        urlStr = encodeUrlCh(urlStr);  
+        PostMethod postMethod = new PostMethod(urlStr);  
+        StringRequestEntity entity = new StringRequestEntity(jsonString, "text/json", "utf-8");  
+        postMethod.setRequestEntity(entity);  
+        return postMethod;  
+    }  
+      
+    /** 
+     * @param urlStr 
+     * @param xmlString 
+     * @return 
+     * @throws UnsupportedEncodingException 
+     * @Author:lulei   
+     * @Description: 设置xml格式流参数 
+     */  
+    private PostMethod createPostMethodXml(String urlStr, String xmlString) throws UnsupportedEncodingException{  
+        urlStr = encodeUrlCh(urlStr);  
+        PostMethod postMethod = new PostMethod(urlStr);  
+        StringRequestEntity entity = new StringRequestEntity(xmlString, "text/xml", "utf-8");  
+        postMethod.setRequestEntity(entity);  
+        return postMethod;  
+    }  
+      
+    /** 
+     * @param urlStr 
      * @param charsetName 
      * @return 访问是否成功 
-     * @throws IOException 
      * @Author: lulei   
      * @Description: 不设置任何头信息直接访问网页 
      */  
-    public boolean readPageByGet(String urlStr, String charsetName) throws IOException{  
+    public boolean readPageByGet(String urlStr, String charsetName){  
         return this.readPageByGet(urlStr, charsetName, null);  
     }  
       
@@ -222,6 +307,7 @@ public abstract class CrawlBase {
      */  
     public void setConnectTimeout(int timeout){  
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);  
+        CrawlBase.connectTimeout = timeout;  
     }  
       
     /** 
@@ -231,6 +317,7 @@ public abstract class CrawlBase {
      */  
     public void setReadTimeout(int timeout){  
         httpClient.getHttpConnectionManager().getParams().setSoTimeout(timeout);  
+        CrawlBase.readTimeout = timeout;  
     }  
       
     /** 
