@@ -17,7 +17,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.log4j.Logger;
 
 /**
  * @author Jerry Wang
@@ -85,14 +84,17 @@ public class HTTPProxy {
     	int connectTimes = maxConnectTimes;
     	
     	while(connectTimes > 0) {
+    		InputStream is = null;
+    		Reader reader = null;
+    		BufferedReader buffer = null;
     		try {
 		    	if(httpClient.executeMethod(method) == HttpStatus.SC_OK) {
 		    		// 获取头信息 
 		    		headers = method.getRequestHeaders();
 		    		
-		    		InputStream is = method.getResponseBodyAsStream();
-		    		Reader reader = new InputStreamReader(is, charset);
-		    		BufferedReader buffer = new BufferedReader(reader);
+		    		is = method.getResponseBodyAsStream();
+		    		reader = new InputStreamReader(is, charset);
+		    		buffer = new BufferedReader(reader);
 		    		StringBuffer sb = new StringBuffer();
 		    		String line = null;
 		    		while((line = buffer.readLine()) != null) {
@@ -115,6 +117,18 @@ public class HTTPProxy {
     		} catch(Exception e) {
     			e.printStackTrace();
     			connectTimes--;
+    		} finally {
+    			if(buffer != null) {
+    				buffer.close();
+    			}
+    			
+    			if(reader != null) {
+    				reader.close();
+    			}
+    			
+    			if(is != null) {
+    				is.close();
+    			}
     		}
     	}
 	    return false;
