@@ -1,9 +1,17 @@
-package com.jerry.crawler.example.chap1;
+package com.jerry.crawler.components.bloomfilter;
 
-public class SimpleHash {
+/**
+ * @author Jerry Wang
+ * @Email  jerry002@126.com
+ * @date   2016年8月30日
+ */
+public class Hash {
+
 	private int cap;
+	
 	private int seed;
-	public SimpleHash(int cap, int seed) {
+	
+	public Hash(int cap, int seed) {
 		this.cap = cap;
 		this.seed = seed;
 	}
