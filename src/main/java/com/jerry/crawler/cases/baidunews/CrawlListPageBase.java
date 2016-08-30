@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;  
 import java.util.HashMap;  
 import java.util.List;  
+
+import com.jerry.crawler.components.crawler.RegexHelper;
   
 /**
  * 获取页面链接地址信息基类  
@@ -43,7 +45,7 @@ public abstract class CrawlListPageBase extends CrawlBase {
      */  
     public List<String> getPageUrls(){  
         List<String> pageUrls = new ArrayList<String>();  
-        pageUrls = DoRegex.getArrayList(getPageSourceCode(), getUrlRegexString(), pageurl, getUrlRegexStringNum());  
+        pageUrls = RegexHelper.getArrayList(getPageSourceCode(), getUrlRegexString(), pageurl, getUrlRegexStringNum());  
         return pageUrls;  
     }  
       

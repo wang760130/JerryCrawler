@@ -23,6 +23,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 
 import com.jerry.crawler.components.crawler.CpdetectorUtil;
+import com.jerry.crawler.components.crawler.RegexHelper;
   
   
 public abstract class CrawlBase {  
@@ -186,11 +187,12 @@ public abstract class CrawlBase {
      */  
     private String encodeUrlCh(String url) {  
         try {  
-            return DoRegex.encodeUrlCh(url);  
+            return RegexHelper.encodeUrlChina(url);  
         } catch (UnsupportedEncodingException e) {  
             e.printStackTrace();  
             return url;  
-        }  
+        }
+		  
     }  
       
     /** 

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;  
 
 import org.apache.http.HttpException;
+
+import com.jerry.crawler.utils.RegexUtil;
   
 public class News extends CrawlBase{  
     private String url;  
@@ -30,7 +32,7 @@ public class News extends CrawlBase{
      * @Description: 默认p标签内的内容为正文，如果正文长度查过设置的最大长度，则截取前半部分 
      */  
     private void setContent() {  
-        String content = DoRegex.getString(getPageSourceCode(), contentRegex, 1);  
+        String content = RegexUtil.getString(getPageSourceCode(), contentRegex, 1);  
         content = content.replaceAll("\n", "")  
                                       .replaceAll("<script.*?/script>", "")  
                                       .replaceAll("<style.*?/style>", "")  
@@ -43,7 +45,7 @@ public class News extends CrawlBase{
      * @Description: 默认title标签内的内容为标题 
      */  
     private void setTitle() {  
-        this.title = DoRegex.getString(getPageSourceCode(), titleRegex, 1);;  
+        this.title = RegexUtil.getString(getPageSourceCode(), titleRegex, 1);;  
     }  
       
     public News(String url) throws HttpException, IOException {  
