@@ -100,7 +100,12 @@ public class HTTPProxy {
 		    		requestHeaders = method.getRequestHeaders();
 		    		responseBody = method.getResponseBody();
 		    		
-		    		contentType = method.getRequestHeader("Content-Type").getValue();
+		    		Header contentTypeHeader = method.getRequestHeader("Content-Type");
+		    		if(contentTypeHeader != null) {
+		    			contentType = contentTypeHeader.getValue();
+		    		} else {
+		    			contentType = "text/html";
+		    		}
 		    		
 		    		is = method.getResponseBodyAsStream();
 		    		reader = new InputStreamReader(is, charset);

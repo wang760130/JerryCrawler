@@ -19,17 +19,16 @@ public class DownloadFile {
 	 * @param contentType
 	 * @return
 	 */
-	public String getFileName(String url, String contentType) {
-		
+	public String getFileName(String url) {
 		// 移除 http://
 		url = url.substring(7);
+		url = url.replaceAll("[\\?/:*|<>\"#.]", "_");
 		
-		if(contentType.indexOf("html") != -1) {
-			return url.replaceAll("[\\?/:*|<>\"]", "_") + ".html";
-		} else {
-			//如application/pdf类型
-			return url.replaceAll("[\\?/:*|<>\"]", "_") + "." + contentType.substring(contentType.lastIndexOf("/") + 1);
+		if(url.endsWith("_")) {
+			url = url.substring(0, url.length() - 1);
 		}
+		return url;
+		
 	}
 
 	/**
@@ -37,21 +36,20 @@ public class DownloadFile {
 	 * @param url
 	 * @return
 	 */
-	public String downloadFile(String url) {
+	public String downloadFile(String url, String path) {
 		HTTPProxy proxy = new HTTPProxy();
 		DataOutputStream out = null;
 		try {
 			proxy.get(url, null);
 			
 			byte[] responseBody = proxy.getResponseBody();
-			String contentType = proxy.getContentType();
-			String filePath = "temp\\" + getFileName(url, contentType);
+			String file = path + File.separator + getFileName(url);
 			
-			out = new DataOutputStream(new FileOutputStream(new File(filePath)));
+			out = new DataOutputStream(new FileOutputStream(new File(file)));
 			for(int i = 0; i < responseBody.length; i++) {
 				out.write(responseBody[i]);
 			}
-			
+			out.flush();
 		} catch (HttpException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

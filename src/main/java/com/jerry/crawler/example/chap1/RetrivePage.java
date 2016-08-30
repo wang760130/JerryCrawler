@@ -6,132 +6,84 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.htmlparser.Parser;
-import org.htmlparser.Tag;
-import org.htmlparser.util.ParserException;
-import org.htmlparser.visitors.NodeVisitor;
 
 public class RetrivePage {
-	
 	private static HttpClient httpClient = new HttpClient();
-	
-	// 设置代理服务器
+	// ���ô��������
 	static {
-//		httpClient.getHostConfiguration().setProxy("192.168.1.1", 8000);
+		// ���ô����������IP��ַ�Ͷ˿�
+//		httpClient.getHostConfiguration().setProxy("172.17.18.84", 8080);
 	}
-	
-	public static boolean downloadPage(String path) throws HttpException, IOException, ParserException {
+
+	public static boolean downloadPage(String path) throws HttpException,
+			IOException {
 		InputStream input = null;
 		OutputStream output = null;
-		
-		// 得到post方法
-		PostMethod post = new PostMethod(path);
-		
-		// 设置post方法的参数
-		NameValuePair[] postData = new NameValuePair[2];
-		
-		postData[0] = new NameValuePair("name","lietu");
-		postData[1] = new NameValuePair("password","lietu");
-		
-		post.addParameters(postData);
-		
-		// 执行， 返回状态码
-		int statusCode = httpClient.executeMethod(post);
-		
-		// 针对状态码进行处理
-		if(statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-			input = post.getResponseBodyAsStream();
-			String charset = post.getResponseCharSet();
-			// 得到文件名	
+		// �õ�post����
+		PostMethod postMethod = new PostMethod(path);
+		// ����post�����Ĳ���
+		/*
+		 * NameValuePair[] postData = new NameValuePair[2]; 
+		 * postData[0] = new NameValuePair("name","lietu"); 
+		 * postData[1] = new NameValuePair("password","*****");
+		 * postMethod.addParameters(postData);
+		 */
+		// ִ�У�����״̬��
+		int statusCode = httpClient.executeMethod(postMethod);
+		// ���״̬����д��� (�����ֻ���?��ֵΪ200��״̬��)
+		if (statusCode == HttpStatus.SC_OK) {
+			input = postMethod.getResponseBodyAsStream();
+			// �õ��ļ���
 			String filename = path.substring(path.lastIndexOf('/') + 1);
-			filename += System.currentTimeMillis();
-				
-			File tempFile = new File(filename);
-			if(!tempFile.exists()) {
-				tempFile.createNewFile();
-			}
-			// 获取文件输出流
-			output = new FileOutputStream(tempFile);
-			
-			// 输出到文件
+			File file = new File(filename + ".txt");
+			// ����ļ������
+			output = new FileOutputStream(file);
+			// ������ļ�
 			int tempByte = -1;
-			
 			while ((tempByte = input.read()) > 0) {
 				output.write(tempByte);
 			}
-			
-			if(input != null)
+			// �ر����������
+			if (input != null) {
 				input.close();
-			
-			if(output != null)
+			}
+			if (output != null) {
 				output.close();
-			
-			// 使用 htmlpaser解析
-			Parser parser = new Parser(filename);
-			parser.setEncoding(charset);
-			NodeVisitor nodeVisitor = new NodeVisitor() {
-				private boolean flag = false;
-				private int index = -1;
-				
-				public void visitTag (Tag tag) {
-					if(tag.getTagName().equals("TBODY")) {
-						System.out.println("begin...");
-						flag = true;
-						index = 0;
-					}
-					
-					if(tag.getTagName().equals("TD") && flag) {
-						switch (index) {
-						case 0:
-							System.out.println("from_to :" + tag.toPlainTextString().trim());
-							break;
-						case 1:
-							System.out.println("carrier :" + tag.toPlainTextString().trim());
-							break;
-						case 2:
-							System.out.println("type :" + tag.toPlainTextString().trim());
-							break;
-						case 3:
-							System.out.println("number :" + tag.toPlainTextString().trim());
-							break;
-						case 4:
-							System.out.println("dicount :" + tag.toPlainTextString().trim());
-							break;
-						case 5:
-							System.out.println("price :" + tag.toPlainTextString().trim());
-							break;
-						default:
-							break;
-						}
-						index ++;
-					}
-				}
-				
-				public void visitEndTag (Tag tag) {
-					if(tag.getTagName().equals("TBOOY")) {
-						System.out.println("end...");
-						flag = false;
-					}
-				}
-			};
-			parser.visitAllNodesWith(nodeVisitor);
+			}
 			return true;
-		
+		}
+		// ����Ҫת�������ת�����
+		if ((statusCode == HttpStatus.SC_MOVED_TEMPORARILY)
+				|| (statusCode == HttpStatus.SC_MOVED_PERMANENTLY)
+				|| (statusCode == HttpStatus.SC_SEE_OTHER)
+				|| (statusCode == HttpStatus.SC_TEMPORARY_REDIRECT)) {
+			// ��ȡ�µ�URL��ַ
+			Header header = postMethod.getResponseHeader("location");
+			if (header != null) {
+				String newUrl = header.getValue();
+				if (newUrl == null || newUrl.equals("")) {
+					newUrl = "/";
+					// ʹ��postת��
+					PostMethod redirect = new PostMethod(newUrl);
+					// ������������һ�����?��������
+				}
+			}
 		}
 		return false;
 	}
-	
+
+	/**
+	 * ���Դ���
+	 */
 	public static void main(String[] args) {
 		try {
-			RetrivePage.downloadPage("http://www.baidu.com");
+			RetrivePage.downloadPage("http://www.lietu.com");
 		} catch (HttpException e) {
-			e.printStackTrace();
-		} catch (ParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
