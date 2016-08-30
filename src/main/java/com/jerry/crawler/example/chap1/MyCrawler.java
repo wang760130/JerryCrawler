@@ -2,6 +2,9 @@ package com.jerry.crawler.example.chap1;
 
 import java.util.Set;
 
+import com.jerry.crawler.components.crawler.DownloadFile;
+import com.jerry.crawler.components.crawler.HtmlParserHepler;
+import com.jerry.crawler.components.crawler.LinkFilter;
 import com.jerry.crawler.components.crawler.VisiteQueue;
 
 public class MyCrawler {
@@ -47,7 +50,7 @@ public class MyCrawler {
 			// 该 URL 放入已访问的 URL中
 			VisiteQueue.addVisitedUrl(visitUrl);
 			// 提取出下载网页的URL
-			Set<String> links = HtmlParserTool.extracLinks(visitUrl, filter);
+			Set<String> links = HtmlParserHepler.extractLinks(visitUrl, filter);
 			// 新的未访问的URL入队
 			for(String link : links) {
 				VisiteQueue.addUnvisitedUrl(link);

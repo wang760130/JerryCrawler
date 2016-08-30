@@ -33,19 +33,27 @@ public class HTTPProxy {
 	// 连接读取时间  
 	private static final int READER_TIMEOUT = 5 * 1000;
 	
+	private static final String DEFAULT_CHARSET = "iso-8859-1";
+	
 	// 默认最大访问次数  
 	private int maxConnectTimes = 3;
 	
     private static HttpClient httpClient = new HttpClient();  
     
-    // 网页默认编码方式  
-    private String charset = "iso-8859-1";  
+    // 网页编码方式  
+    private String charset = DEFAULT_CHARSET;  
 
     // 链接源代码  
     private String sourceCode = "";
     
     // 返回头信息 
-    private Header[] headers = null;
+    private Header[] requestHeaders = null;
+    
+    // 返回返回体
+    private byte[] responseBody = null;
+    
+    // 返回contentType
+    private String contentType = null;
     
     static {  
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);  
@@ -61,9 +69,9 @@ public class HTTPProxy {
      * @throws IOException 
      * @throws HttpException 
      */
-    public boolean get(String url, Map<String, String> params, String defaultCharset) throws HttpException, IOException {
+    public boolean get(String url, Map<String, String> params) throws HttpException, IOException {
     	GetMethod method = this.getMethod(url, params);
-    	return this.execute(method, url, defaultCharset);
+    	return this.execute(method, url);
     }
     
     /**
@@ -75,12 +83,12 @@ public class HTTPProxy {
      * @throws HttpException
      * @throws IOException
      */
-    public boolean post(String url, Map<String, String> params, String defaultCharset) throws HttpException, IOException {
+    public boolean post(String url, Map<String, String> params) throws HttpException, IOException {
     	PostMethod method = this.postMethod(url, params);
-    	return this.execute(method, url, defaultCharset);
+    	return this.execute(method, url);
     }
     
-    private boolean execute(HttpMethod method, String url, String defaultCharset) throws HttpException, IOException {
+    private boolean execute(HttpMethod method, String url) throws HttpException, IOException {
     	int connectTimes = maxConnectTimes;
     	
     	while(connectTimes > 0) {
@@ -89,8 +97,10 @@ public class HTTPProxy {
     		BufferedReader buffer = null;
     		try {
 		    	if(httpClient.executeMethod(method) == HttpStatus.SC_OK) {
-		    		// 获取头信息 
-		    		headers = method.getRequestHeaders();
+		    		requestHeaders = method.getRequestHeaders();
+		    		responseBody = method.getResponseBody();
+		    		
+		    		contentType = method.getRequestHeader("Content-Type").getValue();
 		    		
 		    		is = method.getResponseBodyAsStream();
 		    		reader = new InputStreamReader(is, charset);
@@ -104,7 +114,7 @@ public class HTTPProxy {
 		    		sourceCode = sb.toString();
 		    		
 		    		is = new ByteArrayInputStream(sourceCode.getBytes(charset));
-		    		String charset = CpdetectorUtil.getInputStreamEncode(is, defaultCharset);
+		    		String charset = CpdetectorUtil.getInputStreamEncode(is, DEFAULT_CHARSET);
 		    		
 		    		if(!charset.toLowerCase().equals(charset.toLowerCase())) {
 		    			sourceCode = new String(sourceCode.getBytes(charset));
@@ -192,8 +202,24 @@ public class HTTPProxy {
 	 * 获取网页返回头信息 
 	 * @return
 	 */
-	public Header[] getHeader() {
-		return headers;
+	public Header[] getRequestHeaders() {
+		return requestHeaders;
+	}
+	
+	/**
+	 * 获取ResponseBody 
+	 * @return
+	 */
+	public byte[] getResponseBody() {
+		return responseBody;
+	}
+	
+	/**
+	 * 返回contentType
+	 * @return
+	 */
+	public String getContentType() {
+		return contentType;
 	}
 	
 	/**
