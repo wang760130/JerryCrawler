@@ -27,6 +27,7 @@ public class DownloadFile {
 		if(url.endsWith("_")) {
 			url = url.substring(0, url.length() - 1);
 		}
+		url += ".html";
 		return url;
 		
 	}
