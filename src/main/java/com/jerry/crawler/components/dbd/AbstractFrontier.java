@@ -1,4 +1,4 @@
-package com.jerry.crawler.components.dbdfrontier;
+package com.jerry.crawler.components.dbd;
 
 import java.io.File;
 

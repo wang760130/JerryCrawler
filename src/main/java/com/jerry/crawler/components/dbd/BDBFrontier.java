@@ -1,4 +1,4 @@
-package com.jerry.crawler.components.dbdfrontier;
+package com.jerry.crawler.components.dbd;
 
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,9 +17,9 @@ public class BDBFrontier extends AbstractFrontier {
 	
 	public BDBFrontier(String homeDirectory) {
 		super(homeDirectory);
-		EntryBinding keyBinding = new SerialBinding(storedClassCatalog, String.class);
+		EntryBinding keyBinding = new SerialBinding(storedClassCatalog, Object.class);
 		EntryBinding valueBinding = new SerialBinding(storedClassCatalog, Object.class);
-		db = new StoredMap(database,keyBinding,valueBinding,true);
+		db = new StoredMap(database, keyBinding, valueBinding, true);
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class BDBFrontier extends AbstractFrontier {
 		BDBFrontier db = null;
 		try {
 			db = new BDBFrontier("G:\\");
-			db.put("key", "value");
-			System.out.println(db.get("key"));
+//			db.put("key", "value");
+			System.out.println(db.getNext());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
