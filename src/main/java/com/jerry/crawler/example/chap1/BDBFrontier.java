@@ -1,6 +1,7 @@
 package com.jerry.crawler.example.chap1;
 
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
@@ -21,7 +22,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier{
 	public CrawlUrl getNext() throws Exception {
 		CrawlUrl result = null;
 		if(!pendingUrisDB.isEmpty()) {
-//			Set  entrys = pendingUrisDB.entrySet();
+			Set  entrys = pendingUrisDB.entrySet();
 			Entry<String,CrawlUrl> entry = (Entry<String, CrawlUrl>) pendingUrisDB.entrySet().iterator().next();
 			result = entry.getValue();
 			delete(entry.getKey());
@@ -63,7 +64,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier{
 	public static void main(String[] args) {
 		BDBFrontier dbBFrontier = null;
 		try {
-			dbBFrontier = new BDBFrontier("F://12");
+			dbBFrontier = new BDBFrontier("G:\\");
 			CrawlUrl url = new CrawlUrl();
 			url.setOriUrl("http://www.163.com");
 			dbBFrontier.putUrl(url);

@@ -1,8 +1,11 @@
 package com.jerry.crawler.example.chap1;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class CrawlUrl {
+public class CrawlUrl implements Serializable  {
+	
+	private static final long serialVersionUID = 1L;
 	// 原始url的值，主机部分是域名
 	private String oriUrl;
 	// url的值，主机部分是IP,为了防止重复主机的出现
