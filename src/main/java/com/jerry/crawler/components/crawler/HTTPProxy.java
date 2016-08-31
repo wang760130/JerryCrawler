@@ -1,7 +1,6 @@
 package com.jerry.crawler.components.crawler;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,7 +32,7 @@ public class HTTPProxy {
 	// 连接读取时间  
 	private static final int READER_TIMEOUT = 5 * 1000;
 	
-	private static final String DEFAULT_CHARSET = "iso-8859-1";
+	private static final String DEFAULT_CHARSET = "utf-8";
 	
 	// 默认最大访问次数  
 	private int maxConnectTimes = 3;
@@ -99,31 +98,10 @@ public class HTTPProxy {
 		    	if(httpClient.executeMethod(method) == HttpStatus.SC_OK) {
 		    		requestHeaders = method.getRequestHeaders();
 		    		responseBody = method.getResponseBody();
+		    		sourceCode = method.getResponseBodyAsString();
 		    		
-		    		Header contentTypeHeader = method.getRequestHeader("Content-Type");
-		    		if(contentTypeHeader != null) {
-		    			contentType = contentTypeHeader.getValue();
-		    		} else {
-		    			contentType = "text/html";
-		    		}
-		    		
-		    		is = method.getResponseBodyAsStream();
-		    		reader = new InputStreamReader(is, charset);
-		    		buffer = new BufferedReader(reader);
-		    		StringBuffer sb = new StringBuffer();
-		    		String line = null;
-		    		while((line = buffer.readLine()) != null) {
-		    			sb.append(line);
-		    			sb.append("\n");
-		    		}
-		    		sourceCode = sb.toString();
-		    		
-		    		is = new ByteArrayInputStream(sourceCode.getBytes(charset));
-		    		String charset = CpdetectorUtil.getInputStreamEncode(is, DEFAULT_CHARSET);
-		    		
-		    		if(!charset.toLowerCase().equals(charset.toLowerCase())) {
-		    			sourceCode = new String(sourceCode.getBytes(charset));
-		    		}
+//		    		String charset = CpdetectorUtil.getStringEncode(sourceCode, DEFAULT_CHARSET);
+//		    		sourceCode = new String(sourceCode.getBytes(charset));
 		    		
 		    		return true;
 		    	} else {
