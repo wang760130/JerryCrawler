@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.htmlparser.Parser;
+
 import com.jerry.crawler.utils.RegexUtil;
 
 /**
@@ -17,9 +19,17 @@ import com.jerry.crawler.utils.RegexUtil;
  */
 public class RegexHelper {
 	
+	// 获取URL地址正则
 	private static final String URL_REGEX = "(http://.*/)";
 	
+	// 中文正则
 	private static final String CHINA_REGEX = "([\u4e00-\u9fa5]+)";
+	
+	// 电子邮件正则
+	private static final String EMAIL_REGEX = "[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+";
+	
+	// 去除html标记
+	private static final String HTML_REGEX = "<.+?>";
 	
 	/**
 	 * 获取和正则匹配的绝对链接地址 
@@ -81,4 +91,42 @@ public class RegexHelper {
 			url = url.replaceAll(str, URLEncoder.encode(str,"utf-8"));
 		}
 	}
+	
+	/**
+	 * 判断是否为电子邮箱
+	 * @param email
+	 * @return
+	 */
+	public static boolean checkEmail(String email) {
+		Pattern pattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(email);
+		return matcher.matches();
+	}
+	
+	/**
+	 * 去除html标签
+	 * @param html
+	 * @return
+	 */
+	public static String removeHtml(String html) {
+		Pattern pattern = Pattern.compile("<.+?>", Pattern.DOTALL);
+		Matcher matcher = pattern.matcher(html);
+		return matcher.replaceAll("");
+	}
+	
+	/**
+	 * 查找html中对应条件字符串
+	 * @param html
+	 * @return
+	 */
+	public static String findHtml(String html) {
+		Pattern pattern = Pattern.compile("href=\"(.+?)\"");
+		Matcher matcher = pattern.matcher(html);
+		if(matcher.find()) {
+			return matcher.group(1);
+		}
+		return "";
+	}
+	
+	
 }

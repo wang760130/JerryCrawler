@@ -1,4 +1,4 @@
-package com.jerry.crawler.example.chap4;
+package com.jerry.crawler.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,8 +8,15 @@ import java.io.IOException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-public class RhinoTest {
-	public static void main(String[] args) {
+/**
+ * @author Jerry Wang
+ * @Email  jerry002@126.com
+ * @date   2016年9月1日
+ */
+public class RhinoUtil {
+	
+	
+	public static Context evaluateString(String script) {
 		/* 创建一个Javascript的上下文环境，用来存储Javascript的环境信息 */
 		Context cx = Context.enter();
 		BufferedReader in = null;
@@ -18,13 +25,7 @@ public class RhinoTest {
 			Scriptable scope = cx.initStandardObjects();
 
 			/* 读取一个.js文件 */
-			String script = "";
-			File file = null;
-			if (args.length > 0) {
-				file = new File(args[0]); // 如果有参数，则读入第一个参数中指定的js文件
-			} else {
-				file = new File("script.js"); // 如果没有参数，则读入script.js
-			}
+			File file = new File(script);
 			in = new BufferedReader(new FileReader(file));
 			String s = "";
 			while ((s = in.readLine()) != null) {
@@ -43,5 +44,7 @@ public class RhinoTest {
 				e.printStackTrace();
 			}
 		}
+		return cx;
 	}
+	
 }

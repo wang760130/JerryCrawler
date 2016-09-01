@@ -2,7 +2,7 @@ package com.jerry.crawler.example.chap4;
 import java.util.List;
 
 public class TableContext {
-	private List linkList;
+	private List<Object> linkList;
 	private StringBuffer textBuffer;
 	private int tableRow;
 	private int totalRow;
@@ -32,11 +32,11 @@ public class TableContext {
 		this.tableRow = tableRow;
 	}
 
-	public List getLinkList() {
+	public List<Object> getLinkList() {
 		return linkList;
 	}
 
-	public void setLinkList(List linkList) {
+	public void setLinkList(List<Object> linkList) {
 		this.linkList = linkList;
 	}
 

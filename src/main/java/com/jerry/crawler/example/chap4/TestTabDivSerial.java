@@ -44,6 +44,12 @@ public class TestTabDivSerial {
 	private Pattern pattern = null;
 	private Pattern patternPost = null;
 	
+	public final static int CHANNELLINKTYPE = 1;
+	
+	public final static int COMMONLINKTYPE = 2;
+	
+	public final static int OUTDOMAINLINKTYPE = 3;
+	
 	public void channelParseProcess() {
 		/**
 		 * 提取本站信息的正则表达式
@@ -71,19 +77,19 @@ public class TestTabDivSerial {
 			TableContext tableContext = it.next();
 			this.tableNumber = tableContext.getTableRow();
 			if((tableContext.getTableRow() == this.channelNumber) || (this.channelNumber == -1)) {
-				List linkList = tableContext.getLinkList();
+				List<Object> linkList = tableContext.getLinkList();
 				
 				// 如果没有任何连接
 				if((linkList == null) || (linkList.size() == 0)) {
 					continue;
 				}
 				
-				Iterator h1 = linkList.iterator();
+				Iterator<Object> h1 = linkList.iterator();
 				// 分析单个表单
 				while(h1.hasNext()) {
 					LinkTag linkTag = (LinkTag) h1.next();
 					// 非法link
-					if(this.isValidLink(linkTag.getLink()) == SpiderConstant.OUTDOMAINLINKTYPE) {
+					if(this.isValidLink(linkTag.getLink()) == OUTDOMAINLINKTYPE) {
 						continue;
 					}
 					if(linkTag.getLinkText().length() < 8) {
@@ -91,7 +97,7 @@ public class TestTabDivSerial {
 					}
 					
 					// 过滤无效link
-					if(splitManager.isChannelList(linkTag.getLinkText()) != SpiderConstant.COMMONLINKTYPE) {
+					if(splitManager.isChannelList(linkTag.getLinkText()) != COMMONLINKTYPE) {
 						continue;
 					}
 				}
@@ -109,22 +115,22 @@ public class TestTabDivSerial {
 		Matcher matcher = pattern.matcher(link);
 		while (matcher.find()) {
 
-			int start = matcher.start(2);
+//			int start = matcher.start(2);
 			int end = matcher.end(2);
 			String postUrl = link.substring(end).trim();
 			// 如果是目录型连接
 			if ((postUrl.length() == 0) || (postUrl.indexOf(".") < 0)) {
-				return SpiderConstant.CHANNELLINKTYPE;
+				return CHANNELLINKTYPE;
 			} else {
 				Matcher matcherPost = patternPost.matcher(link);
 				if (matcherPost.find()) {
-					return SpiderConstant.COMMONLINKTYPE;
+					return COMMONLINKTYPE;
 				} else {
-					return SpiderConstant.OUTDOMAINLINKTYPE;
+					return OUTDOMAINLINKTYPE;
 				}
 			}
 		}
-		return SpiderConstant.OUTDOMAINLINKTYPE;
+		return OUTDOMAINLINKTYPE;
 	}
 
 	
@@ -192,7 +198,7 @@ public class TestTabDivSerial {
 		if((tableList != null) && (tableList.size() > 0 )) {
 			if(b1) {
 				TableContext tableContext = new TableContext();
-				tableContext.setLinkList(new ArrayList());
+				tableContext.setLinkList(new ArrayList<Object>());
 				tableContext.setTextBuffer(new StringBuffer());
 				tableNumber++;
 				tableContext.setTableRow(tableNumber);
