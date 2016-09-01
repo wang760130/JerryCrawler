@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.jerry.crawler.common.Global;
+import com.jerry.crawler.common.Path;
 import com.jerry.crawler.utils.IpUtil;
 
 /**
@@ -21,7 +21,7 @@ import com.jerry.crawler.utils.IpUtil;
  */
 public class IPSeeker {
 	//纯真IP数据库名
-	private String IP_FILE = Global.IP_FILE;
+	private String IP_FILE = Path.IP_FILE;
 	
 	// 一些固定常量，比如记录长度等等
 	private static final int IP_RECORD_LENGTH = 7;

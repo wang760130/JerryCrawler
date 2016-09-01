@@ -36,20 +36,15 @@ import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
+import com.jerry.crawler.common.Global;
+
 /**
  * 正文抽取主程序
  * @author Jerry Wang
  *
  */
 public class ExtractContext {
-	private static final String lineSign = System.getProperty("line.separator");
-	private static final int lineSignSize = lineSign.length();
 	
-	/**
-	 * 定义系统下上文
-	 */
-//	public static final ApplicationContext context = new ClassPathApplicationContext(new String[] {
-//	});
 	
 	/**
 	 * 收集HTML页面信息
@@ -90,9 +85,9 @@ public class ExtractContext {
 						if(start >= 0) {
 							String tempCrop = crop.replace("{0}", channelLinkDO.getLink());
 							tempCrop = tempCrop.replace("{1}", "原文连接：" + channelLinkDO.getLink());
-							writer.write(tempCrop + lineSign);
-							writer.write(netshap + lineSign);
-							writer.write(lineContext + lineSign);
+							writer.write(tempCrop + Global.LINE_SIGN);
+							writer.write(netshap + Global.LINE_SIGN);
+							writer.write(lineContext + Global.LINE_SIGN);
 							continue;
 						}
 						
@@ -100,24 +95,24 @@ public class ExtractContext {
 						if(start >= 0) {
 							String tempLine = tempLeate.replace("{0}", "test.htm");
 							tempLine = tempLine.replace("{1}", "标题：" + channelLinkDO.getLinktext());
-							writer.write(tempLine + lineSign);
+							writer.write(tempLine + Global.LINE_SIGN);
 							continue;
 						}
 						
 						start = line.indexOf("#metatitle");
 						if(start >= 0) {
 							metatitle = metatitle.replace("{0}", channelLinkDO.getLinktext());
-							writer.write(metatitle + lineSign);
+							writer.write(metatitle + Global.LINE_SIGN);
 							continue;
 						}
 						
 						start = line.indexOf("#metadesc");
 						if(start >= 0) {
 							metadesc = metadesc.replace("{0}",channelLinkDO.getLinktext());
-							writer.write(metadesc + lineSign);
+							writer.write(metadesc + Global.LINE_SIGN);
 							continue;
 						}
-						writer.write(line + lineSignSize);
+						writer.write(line + Global.LINE_SIGN_SIZE);
 					}
 					writer.flush();
 					writer.close();
@@ -170,7 +165,7 @@ public class ExtractContext {
 				temp.append("<p style=\"text-indent:2em\">");
 				tableList.add(temp);
 				temp = new StringBuffer();
-				temp.append("</p>").append(lineSign);
+				temp.append("</p>").append(Global.LINE_SIGN);
 				tableList.add(temp);
 				return tableList;
 			}
@@ -188,7 +183,7 @@ public class ExtractContext {
 			tableList.add(temp);
 			this.extractPatagraph(pnode, siteUrl, tableList);
 			temp = new StringBuffer();
-			temp.append("</p>").append(lineSign);
+			temp.append("</p>").append(Global.LINE_SIGN);
 			tableList.add(temp);
 			return tableList;
 		}
@@ -248,7 +243,7 @@ public class ExtractContext {
 				StringBuffer node;
 				int status = 0;
 				StringBuffer lineStart = new StringBuffer("<p style=\"text-indent:2em\">");
-				StringBuffer lineEnd = new StringBuffer("</p>" + lineSign);
+				StringBuffer lineEnd = new StringBuffer("</p>" + Global.LINE_SIGN);
 				while(it.hasNext()) {
 					Object k = it.next();
 					if(k instanceof LinkTag) {
@@ -342,7 +337,7 @@ public class ExtractContext {
 				temp.append("<p style=\"text-indent:2em\">");
 				tableList.add(temp);
 				temp = new StringBuffer();
-				temp.append("</p>").append(lineSign);
+				temp.append("</p>").append(Global.LINE_SIGN);
 				tableList.add(temp);
 				return tableList;
 			}
@@ -567,8 +562,8 @@ public class ExtractContext {
 		chars = string.length();
 		if(0 != chars) {
 			length = buffer.length();
-			state = ((0 == length) || (buffer.charAt(length - 1) == ' ') || ((lineSignSize <= length) &&
-					buffer.substring(length - lineSignSize,length).equals(lineSign))) ? 0 : 1;
+			state = ((0 == length) || (buffer.charAt(length - 1) == ' ') || ((Global.LINE_SIGN_SIZE <= length) &&
+					buffer.substring(length - Global.LINE_SIGN_SIZE,length).equals(Global.LINE_SIGN))) ? 0 : 1;
 			for(int i = 0; i < chars; i++) {
 				character = string.charAt(i);
 				switch (character) {
@@ -600,7 +595,7 @@ public class ExtractContext {
 		ExtractContext extractContext = new ExtractContext();
 		ChannelLinkDO  channelLinkDO = new ChannelLinkDO();
 		channelLinkDO.setEncode("gb2312");
-		channelLinkDO.setLink("");
+		channelLinkDO.setLink("http://www.baidu.com");
 		channelLinkDO.setLinktext("test");
 		extractContext.makeContext(channelLinkDO);
 	}

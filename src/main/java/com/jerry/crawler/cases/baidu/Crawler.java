@@ -3,7 +3,7 @@ package com.jerry.crawler.cases.baidu;
 import java.io.File;
 import java.util.Set;
 
-import com.jerry.crawler.common.Global;
+import com.jerry.crawler.common.Path;
 import com.jerry.crawler.components.crawler.DownloadFile;
 import com.jerry.crawler.components.crawler.HtmlParserHepler;
 import com.jerry.crawler.components.crawler.LinkFilter;
@@ -110,7 +110,7 @@ public class Crawler {
 
 	public static void main(String[] args) {
 		Crawler crawler = new Crawler();
-		crawler.setPath(Global.BAIDU_OUTPUT_PATH);
+		crawler.setPath(Path.BAIDU_OUTPUT_PATH);
 		crawler.setMaxVisitedUrlNum(1000);
 		crawler.setSeeds(new String[]{ "http://www.baidu.com" });
 		crawler.setStartsWith("http://www.baidu.com");

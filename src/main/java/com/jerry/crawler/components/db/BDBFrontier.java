@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.jerry.crawler.common.Global;
+import com.jerry.crawler.common.Path;
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.collections.StoredMap;
@@ -55,7 +55,7 @@ public class BDBFrontier extends AbstractFrontier {
 	public static void main(String[] args) {
 		BDBFrontier db = null;
 		try {
-			db = new BDBFrontier(Global.DB_PATH);
+			db = new BDBFrontier(Path.DB_PATH);
 			db.put("key", "value");
 			System.out.println(db.getNext());
 		} catch (Exception e) {
