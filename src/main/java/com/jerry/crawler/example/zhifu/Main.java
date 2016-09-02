@@ -1,4 +1,4 @@
-package com.jerry.crawler.cases.zhifu;
+package com.jerry.crawler.example.zhifu;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.jerry.crawler.cases.baidu;
+package com.jerry.crawler.example.baidu;
 
 import java.io.File;
 import java.util.Set;

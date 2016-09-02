@@ -1,4 +1,4 @@
-package com.jerry.crawler.cases.ip;
+package com.jerry.crawler.example.ip;
 
 import java.io.IOException;
 import java.util.Date;

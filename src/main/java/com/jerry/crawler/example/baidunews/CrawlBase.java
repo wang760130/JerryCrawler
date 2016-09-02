@@ -1,4 +1,4 @@
-package com.jerry.crawler.cases.baidunews;
+package com.jerry.crawler.example.baidunews;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

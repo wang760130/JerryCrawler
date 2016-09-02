@@ -1,4 +1,4 @@
-package com.jerry.crawler.components.extract;
+package com.jerry.crawler.example.extract;
 
 import java.util.Date;
 

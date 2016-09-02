@@ -1,4 +1,4 @@
-package com.jerry.crawler.components.extract;
+package com.jerry.crawler.example.extract;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -37,6 +37,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
 import com.jerry.crawler.common.Global;
+import com.jerry.crawler.common.Path;
 
 /**
  * @author Jerry Wang
@@ -45,9 +46,6 @@ import com.jerry.crawler.common.Global;
  */
 public class ExtractContext {
 
-	private static final String srcfilePath = "D://context.vm";
-	private static final String destfilePath = "D://text.html";
-	
 	private static final StringBuffer LINE_START = new StringBuffer("<p style=\"text-indent:2em\">");
 	private static final StringBuffer LINE_END = new StringBuffer("</p>" + Global.LINE_SIGN);
 	
@@ -56,13 +54,16 @@ public class ExtractContext {
 	 * @param link
 	 */
 	public void makeContext(ChannelLink channelLink) {
-//		String metakeywords = "<META content={0} name=keyword>";
-		String metatitle = "<TITLE>{0}</TITLE>";
-		String metadesc = "<META content={0} name=description>";
-		String netshap = "<p>正文快照：时间{0}</p>";
 		
-		String tempLeate = "<LI class=active><A href=\"{0}\" target=_blank>{1}</A></LI>";
-		String crop = "<p><A href=\"{0}\" target=_blank>{1}</A></p>";
+		String title = "<title>{0}</title>";
+		String keywords = "<meta name=\"keywords\" content=\"{0}\" />";
+		String description = "<meta name=\"description\" content=\"{0}\" />";
+
+		
+		String titleTag = "#title";
+		String keywordsTag = "#keywords";
+		String descriptionTag = "#description";
+
 		
 		try {
 			String link = channelLink.getLink();
@@ -80,42 +81,33 @@ public class ExtractContext {
 					// 抓取出内容
 					this.extractHtml(node, context, url);
 					
-					BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(srcfilePath), "UTF-8"));
-					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destfilePath), "UTF-8"));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(Path.EXTRACT_SRC_FILE), "UTF-8"));
+					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Path.EXTRACT_DEST_FILE), "UTF-8"));
 					
 					String lineContext = context.getTextBuffer().toString();
 					String line = null;
 					
 					while((line = reader.readLine()) != null) {
-						int start = line.indexOf("#content");
+						int start = 0;
+								
+						start = line.indexOf(titleTag);
 						if(start >= 0) {
-							String tempCrop = crop.replace("{0}", channelLink.getLink());
-							tempCrop = tempCrop.replace("{1}", "原文连接：" + channelLink.getLink());
-							writer.write(tempCrop + Global.LINE_SIGN);
-							writer.write(netshap + Global.LINE_SIGN);
-							writer.write(lineContext + Global.LINE_SIGN);
+							title = title.replace("{0}", channelLink.getLinktext());
+							writer.write(title + Global.LINE_SIGN);
 							continue;
 						}
 						
-						start = line.indexOf("#titledesc");
+						start = line.indexOf(keywordsTag);
 						if(start >= 0) {
-							String tempLine = tempLeate.replace("{0}", "test.htm");
-							tempLine = tempLine.replace("{1}", "标题：" + channelLink.getLinktext());
-							writer.write(tempLine + Global.LINE_SIGN);
+							keywords = keywords.replace("{0}", channelLink.getLinktext());
+							writer.write(keywords + Global.LINE_SIGN);
 							continue;
 						}
 						
-						start = line.indexOf("#metatitle");
+						start = line.indexOf(descriptionTag);
 						if(start >= 0) {
-							metatitle = metatitle.replace("{0}", channelLink.getLinktext());
-							writer.write(metatitle + Global.LINE_SIGN);
-							continue;
-						}
-						
-						start = line.indexOf("#metadesc");
-						if(start >= 0) {
-							metadesc = metadesc.replace("{0}",channelLink.getLinktext());
-							writer.write(metadesc + Global.LINE_SIGN);
+							description = description.replace("{0}",channelLink.getLinktext());
+							writer.write(description + Global.LINE_SIGN);
 							continue;
 						}
 						writer.write(line + Global.LINE_SIGN_SIZE);
@@ -428,22 +420,23 @@ public class ExtractContext {
 	 */
 	private void setLinkImg(Node pnode, String url) {
 		NodeList nodeList = pnode.getChildren();
-		
-		try {
-			for(NodeIterator i = nodeList.elements(); i.hasMoreNodes();) {
-				Node node = i.nextNode();
-				if (node instanceof ImageTag) {
-					ImageTag image = (ImageTag) node;
-					
-					if(image.getImageURL().toUpperCase().indexOf("http://") < 0) {
-						image.setImageURL(url + image.getImageURL());
-					} else {
-						image.setImageURL(image.getImageURL());
+		if(nodeList != null && nodeList.size() > 0) {
+			try {
+				for(NodeIterator i = nodeList.elements(); i.hasMoreNodes();) {
+					Node node = i.nextNode();
+					if (node instanceof ImageTag) {
+						ImageTag image = (ImageTag) node;
+						
+						if(image.getImageURL().toUpperCase().indexOf("http://") < 0) {
+							image.setImageURL(url + image.getImageURL());
+						} else {
+							image.setImageURL(image.getImageURL());
+						}
 					}
 				}
+			} catch (ParserException e) {
+				e.printStackTrace();
 			}
-		} catch (ParserException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -607,5 +600,14 @@ public class ExtractContext {
 		}
 		
 		return sb.toString();
+	}
+	
+	public static void main(String[] args) {
+		ChannelLink channelLink = new ChannelLink();
+		channelLink.setLink("http://china.ynet.com/3.1/1609/02/11681637.html");
+		channelLink.setEncode("utf-8");
+		channelLink.setLinktext("test");
+		ExtractContext context  = new ExtractContext();
+		context.makeContext(channelLink);
 	}
 }
