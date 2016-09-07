@@ -42,7 +42,7 @@ public class Crawler {
 				// 推荐内容url
 				String href = aTagElement.attr("href");    
 				// 去除不规范url
-				if(href.startsWith("https://www.zhihu.com/question/")){                            
+				if(href.startsWith("/question/")){                            
 					Pattern pattern = Pattern.compile("question/(.*?)/");
 					Matcher matcher = pattern.matcher(href);
 					if (matcher.find()) {
@@ -61,7 +61,7 @@ public class Crawler {
 	
 	private static List<ZhifuQuestion> getAnswers() {
 		List<ZhifuQuestion> list = new ArrayList<ZhifuQuestion>();
-		ZhifuQuestion zhifu = null;
+		ZhifuQuestion question = null;
 		
 		List<String> quesionUrlList = getQuestionUrl();
 		for(String questionUrl : quesionUrlList) {
@@ -73,32 +73,53 @@ public class Crawler {
 				Document document = Jsoup.parse(sourceCode);
 				
 				// 问题标题
+				String questionTitle = "";
 				Element questionTitleElement = document.getElementById("zh-question-title");
-				String questionTitle = questionTitleElement.getElementsByClass("zm-editable-content").get(0).text();
+				if(questionTitleElement != null) {
+					Elements editableContentElement = questionTitleElement.getElementsByClass("zm-editable-content");
+					if(editableContentElement != null && editableContentElement.size() > 0) {
+						questionTitle = editableContentElement.first().text();
+					}
+					
+				}
 				
-				// 问题消息标书
-				String questionDescription = "";
-				Element despElement = document.getElementById("zh-question-detail");
-				if(despElement != null){
-					questionDescription = despElement.text();
+				// 问题描述
+				String questionDetail = "";
+				Element questionDetailElement = document.getElementById("zh-question-detail");
+				if(questionDetailElement != null){
+					questionDetail = questionDetailElement.text();
+				}
+				
+				
+				// Tag
+				Elements tagItems = document.getElementsByClass("zm-item-tag");
+				for(Element tagItem : tagItems) {
+					tagItem.text();
 				}
 				
 				// 解答
-				List<String> answers = new ArrayList<String>();
-				Elements ansItems = document.getElementsByClass("zm-item-answer");
-				for(Element ansItem : ansItems){
-					Element textElement = ansItem.getElementsByClass("zm-item-rich-text").first();
-					if(despElement != null){
-						answers.add(textElement.text());
+				ZhifuAnswer answer = null;
+				List<ZhifuAnswer> answerList = new ArrayList<ZhifuAnswer>();
+				Elements answerItems = document.getElementsByClass("zm-item-answer");
+				for(Element answerItem : answerItems){
+					answer = new ZhifuAnswer();
+					
+					String content = "";
+					Element textElement = answerItem.getElementsByClass("zm-item-rich-text").first();
+					if(questionDetailElement != null){
+						content = textElement.text();
+						answer.setContent(content);
 					}
+					
+					answerList.add(answer);
 				}
 				
-				zhifu = new ZhifuQuestion();
-				zhifu.setUrl(questionUrl);
-//				zhifu.setQuestion(title);
-				zhifu.setDescription(questionDescription);
-//				zhifu.setAnswerList(answers);
-				list.add(zhifu);
+				question = new ZhifuQuestion();
+				question.setUrl(questionUrl);
+				question.setQuestionTitle(questionTitle);
+				question.setQuestionDetail(questionDetail);
+				question.setAnswerList(answerList);
+				list.add(question);
 			} catch (HttpException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -111,7 +132,7 @@ public class Crawler {
 	public static void crawling() {
 		List<ZhifuQuestion> zhifuList = getAnswers();
 		for(ZhifuQuestion zhifu : zhifuList) {
-			System.out.println(zhifu.getQuestion());
+			System.out.println(zhifu);
 		}
 		
 	}

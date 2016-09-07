@@ -20,10 +20,10 @@ public class ZhifuQuestion {
 	private ZhifuAuthor zhifuAuthor;
 	
 	// 问题
-	private String question;
+	private String questionTitle;
 	
 	// 问题描述
-	private String description;
+	private String questionDetail;
 	
 	// 标签
 	private String tag;
@@ -64,20 +64,20 @@ public class ZhifuQuestion {
 		this.zhifuAuthor = zhifuAuthor;
 	}
 
-	public String getQuestion() {
-		return question;
+	public String getQuestionTitle() {
+		return questionTitle;
 	}
 
-	public void setQuestion(String question) {
-		this.question = question;
+	public void setQuestionTitle(String questionTitle) {
+		this.questionTitle = questionTitle;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getQuestionDetail() {
+		return questionDetail;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setQuestionDetail(String questionDetail) {
+		this.questionDetail = questionDetail;
 	}
 
 	public String getTag() {
@@ -123,11 +123,11 @@ public class ZhifuQuestion {
 	@Override
 	public String toString() {
 		return "ZhifuQuestion [url=" + url + ", md5=" + md5 + ", zhifuAuthor="
-				+ zhifuAuthor + ", question=" + question + ", description="
-				+ description + ", tag=" + tag + ", answerList=" + answerList
-				+ ", lastEditDate=" + lastEditDate + ", browsingTimes="
-				+ browsingTimes + ", followNum=" + followNum + "]";
+				+ zhifuAuthor + ", questionTitle=" + questionTitle
+				+ ", questionDetail=" + questionDetail + ", tag=" + tag
+				+ ", answerList=" + answerList + ", lastEditDate="
+				+ lastEditDate + ", browsingTimes=" + browsingTimes
+				+ ", followNum=" + followNum + "]";
 	}
 
-	
 }
