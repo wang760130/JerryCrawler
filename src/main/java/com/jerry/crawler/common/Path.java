@@ -21,4 +21,7 @@ public class Path {
 	public static final String EXTRACT_SRC_FILE = CURRENT_PATH + "output" + File.separator + "extract" + File.separator + "extract.vm";
 	
 	public static final String EXTRACT_DEST_FILE = CURRENT_PATH + "output" + File.separator + "extract" + File.separator + "extract.html";
+	
+	public static final String ZHIFU_FILE = CURRENT_PATH + "output" + File.separator + "zhifu" + File.separator + "zhifu.txt";
+
 }
