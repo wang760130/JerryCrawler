@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.htmlparser.Parser;
-
 import com.jerry.crawler.utils.RegexUtil;
 
 /**
@@ -19,8 +17,11 @@ import com.jerry.crawler.utils.RegexUtil;
  */
 public class RegexHelper {
 	
-	// 获取URL地址正则
-	private static final String URL_REGEX = "(http://.*/)";
+//	private static final String URL_REGEX = "(http://.*/)";
+	
+	private static String ROOT_URL_REGEX = "(http://.*?/)";
+	
+	private static String CURRENT_URL_REGEX = "(http://.*/)";
 	
 	// 中文正则
 	private static final String CHINA_REGEX = "([\u4e00-\u9fa5]+)";
@@ -29,7 +30,7 @@ public class RegexHelper {
 	private static final String EMAIL_REGEX = "[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+";
 	
 	// 去除html标记
-	private static final String HTML_REGEX = "<.+?>";
+//	private static final String HTML_REGEX = "<.+?>";
 	
 	/**
 	 * 获取和正则匹配的绝对链接地址 
@@ -68,11 +69,14 @@ public class RegexHelper {
 			e.printStackTrace();
 		}
 		
-		if(url.indexOf("http") == 0) {
+		if (url.indexOf("http") == 0){
 			return url;
 		}
 		
-		return RegexUtil.getFirstString(currentUrl, URL_REGEX, 1) + url;
+		if  (url.indexOf("/") == 0){
+			return RegexUtil.getFirstString(currentUrl, ROOT_URL_REGEX, 1) + url.substring(1);
+		}
+		return RegexUtil.getFirstString(currentUrl, CURRENT_URL_REGEX, 1) + url;
 	}
 	
 	
