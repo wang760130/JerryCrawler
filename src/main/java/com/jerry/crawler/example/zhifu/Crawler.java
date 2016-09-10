@@ -92,10 +92,10 @@ public class Crawler {
 				
 				
 				// Tag
-				Elements tagItems = document.getElementsByClass("zm-item-tag");
+				/*Elements tagItems = document.getElementsByClass("zm-item-tag");
 				for(Element tagItem : tagItems) {
 					tagItem.text();
-				}
+				}*/
 				
 				// 解答
 				ZhifuAnswer answer = null;
@@ -105,9 +105,9 @@ public class Crawler {
 					answer = new ZhifuAnswer();
 					
 					String content = "";
-					Element textElement = answerItem.getElementsByClass("zm-item-rich-text").first();
+					Element contentElement = answerItem.getElementsByClass("zm-item-rich-text").first();
 					if(questionDetailElement != null){
-						content = textElement.text();
+						content = contentElement.text();
 						answer.setContent(content);
 					}
 					
@@ -119,6 +119,8 @@ public class Crawler {
 				question.setQuestionTitle(questionTitle);
 				question.setQuestionDetail(questionDetail);
 				question.setAnswerList(answerList);
+				
+				System.out.println(question);
 				list.add(question);
 			} catch (HttpException e) {
 				e.printStackTrace();
@@ -130,11 +132,7 @@ public class Crawler {
 	}
 	
 	public static void crawling() {
-		List<ZhifuQuestion> zhifuList = getAnswers();
-		for(ZhifuQuestion zhifu : zhifuList) {
-			System.out.println(zhifu);
-		}
-		
+		getAnswers();		
 	}
 	
 	public static void main(String[] args) {
